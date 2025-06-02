@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=http://localhost:4000
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      - DATABASE_URL=mysql://root:root@mysql:3306/projeto
+      - REDIS_URL=redis://redis:6379
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: projeto
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql_data:
